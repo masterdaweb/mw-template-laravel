@@ -1,0 +1,20 @@
+# How the platform runs this app's services, kept with its code. A setting
+# written here is read-only in the console: change it here and push. Each
+# service built from this repository takes its own [services.<name>] part.
+
+[services.web.deploy]
+# Once per deploy, before the new version takes traffic; if it fails, the
+# version before stays live.
+release_command = "php artisan migrate --force"
+health_check_path = "/up"
+
+[services.worker.deploy]
+# config:clear first: the build caches the configuration without the
+# variables the service gets when it runs.
+start_command = "php artisan config:clear && php artisan queue:work --tries=3 --sleep=1"
+
+[services.scheduler.deploy]
+start_command = "php artisan config:clear && php artisan schedule:run"
+
+[services.scheduler.cron]
+schedule = "* * * * *"
